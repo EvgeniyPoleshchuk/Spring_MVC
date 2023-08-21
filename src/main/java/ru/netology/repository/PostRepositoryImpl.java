@@ -21,6 +21,9 @@ public class PostRepositoryImpl implements Repository {
 
     @Override
     public Optional<Post> getById(long id) {
+        if (postMap.get(id).isDeleted()) {
+            throw new NotFoundException();
+        }
         return Optional.ofNullable(postMap.get(id));
     }
 
@@ -28,7 +31,7 @@ public class PostRepositoryImpl implements Repository {
     public Post save(Post post) {
         long counter = count.incrementAndGet();
         if (post.getId() > postMap.size()) {
-            throw new NotFoundException("Not found massage");
+            throw new NotFoundException();
         }
         if (post.getId() != 0) {
             postMap.put(post.getId(), post);
@@ -42,6 +45,6 @@ public class PostRepositoryImpl implements Repository {
 
     @Override
     public void removeById(long id) {
-        postMap.remove(id);
+        postMap.get(id).setDeleted(true);
     }
 }
